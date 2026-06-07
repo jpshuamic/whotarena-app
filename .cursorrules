@@ -1,0 +1,17 @@
+Read AGENTS.md first and follow it strictly.
+
+Build one feature at a time. One screen. One integration.
+Never multiple features in one prompt.
+
+Constraint library:
+- Do not change the screen design.
+- Preserve the existing UI exactly.
+- Do not expose any secrets in the client app.
+- Do not introduce new libraries without asking.
+- Do not modify files outside the requested folder.
+- Do not refactor existing code.
+- Do not add features that were not requested.
+- Do not change existing navigation structure.
+
+The game engine is server-authoritative. Client engine is for UI feedback only.
+Never trust client-side game state for financial outcomes.

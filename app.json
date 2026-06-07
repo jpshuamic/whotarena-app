@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "WhotArena",
+    "slug": "whotarena",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "whotarena",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0D1B2A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.whotarena.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0D1B2A"
+      },
+      "package": "com.whotarena.app"
+    },
+    "plugins": ["expo-router"]
+  }
+}
