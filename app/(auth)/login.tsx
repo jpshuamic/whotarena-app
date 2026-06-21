@@ -80,10 +80,7 @@ export default function LoginScreen() {
         <Pressable
           onPress={handleSendOtp}
           disabled={loading}
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: pressed ? colors.vibrantGreen : colors.electricBlue, opacity: loading ? 0.6 : 1 },
-          ]}
+          style={[styles.button, { opacity: loading ? 0.6 : 1 }]}
         >
           <Text style={styles.buttonText}>
             {loading ? 'Sending code...' : 'Send verification code'}
@@ -147,12 +144,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
+    backgroundColor: colors.electricBlue,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
   },
   buttonText: {
-    color: colors.deepNavy,
+    color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
   },

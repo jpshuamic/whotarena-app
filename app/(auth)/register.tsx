@@ -105,10 +105,7 @@ export default function RegisterScreen() {
         <Pressable
           onPress={handleRegister}
           disabled={loading}
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: pressed ? colors.vibrantGreen : colors.electricBlue, opacity: loading ? 0.6 : 1 },
-          ]}
+          style={[styles.button, { opacity: loading ? 0.6 : 1 }]}
         >
           <Text style={styles.buttonText}>
             {loading ? 'Sending code...' : 'Continue'}
@@ -176,13 +173,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
+    backgroundColor: colors.electricBlue,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 16,
   },
   buttonText: {
-    color: colors.deepNavy,
+    color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
   },
