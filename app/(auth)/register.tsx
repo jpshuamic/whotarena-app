@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
 
@@ -52,6 +53,9 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </Pressable>
       <View style={styles.inner}>
         <Text style={styles.label}>Create your account</Text>
         <Text style={styles.heading}>Sign Up</Text>
@@ -138,6 +142,10 @@ const styles = StyleSheet.create({
     color: colors.deepNavy,
     fontWeight: '700',
     fontSize: 16,
+  },
+  backButton: {
+    marginTop: 16,
+    marginBottom: 8,
   },
   loginLink: {
     alignItems: 'center',

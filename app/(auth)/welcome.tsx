@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { colors } from '../../constants/colors';
 import { brandImages } from '../../constants/images';
 
-const FEATURE_PILLS = ['🃏 Skill Game', '💰 Real Money', '⚡ Instant Pay'];
+const FEATURE_PILLS = ['Skill Game', 'Real Money', 'Instant Pay'];
 
 export default function WelcomeScreen() {
   const router = useRouter();

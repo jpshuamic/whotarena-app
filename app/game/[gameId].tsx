@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useGame } from '../../hooks/useGame';
 import { getValidPlayableCards } from '../../engine/moves';
@@ -245,8 +246,12 @@ export default function ActiveGameScreen() {
             borderRadius: 18,
             paddingVertical: 16,
             alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
           }}
         >
+          <MaterialCommunityIcons name="cards-playing" size={18} color="white" />
           <Text style={{ color: colors.warmWhite, fontWeight: '700' }}>Draw from deck</Text>
         </Pressable>
       ) : null}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
 
@@ -47,6 +48,9 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1, backgroundColor: colors.deepNavy, padding: 24 }}
     >
+      <Pressable onPress={() => router.back()} style={{ marginTop: 16, marginBottom: 8 }}>
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </Pressable>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <Text style={{ color: colors.gold, fontSize: 14, fontWeight: '700', marginBottom: 12 }}>
           Sign in with phone

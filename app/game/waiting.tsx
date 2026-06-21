@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { colors } from '../../constants/colors';
 import { formatNaira } from '../../lib/paystack';
@@ -287,8 +288,12 @@ export default function WaitingRoomScreen() {
               borderRadius: 18,
               paddingVertical: 16,
               alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 8,
             }}
           >
+            <Ionicons name="close" size={16} color="rgba(255,255,255,0.5)" />
             <Text style={{ color: colors.deepNavy, fontWeight: '700' }}>Back to Lobby</Text>
           </Pressable>
         )}
