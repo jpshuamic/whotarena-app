@@ -54,6 +54,7 @@ export default function LobbyScreen() {
             entryFee={stake.entryFee}
             maxPlayers={stake.maxPlayers}
             botEnabled={stake.botEnabled}
+            color={stake.color}
             onPress={() => router.push(`/game/waiting?roomLevel=${stake.id}`)}
           />
         ))}
