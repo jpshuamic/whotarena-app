@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   mascot: {
-    width: '85%',
-    height: 260,
+    width: '90%',
+    height: 300,
     alignSelf: 'center',
   },
   headline: {
