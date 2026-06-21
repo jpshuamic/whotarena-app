@@ -13,7 +13,7 @@ export const brandImages = {
   mascotHappy: require('../assets/images/mascot_happy.png'), // DONE — base character
   mascotCelebrating: asset('mascot_celebrating.png'),
   mascotSad: asset('mascot_sad.png'),
-  mascotThinking: asset('mascot_thinking.png'),
+  mascotThinking: require('../assets/images/mascot_thinking.png'),
   mascotNeutral: asset('mascot_neutral.png'),
   mascotWelcome: asset('mascot_welcome.png'),
 } as const;

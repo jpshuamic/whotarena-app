@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { brandImages } from '../../constants/images';
 import { supabase } from '../../lib/supabase';
 import { colors } from '../../constants/colors';
 import { formatNaira } from '../../lib/paystack';
@@ -243,6 +244,17 @@ export default function WaitingRoomScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 48 }}>
+        <Image
+          source={brandImages.mascotThinking}
+          style={{
+            width: '60%',
+            height: 140,
+            resizeMode: 'contain',
+            alignSelf: 'center',
+            marginTop: 16,
+            marginBottom: 8,
+          }}
+        />
         <View
           style={{
             backgroundColor: colors.deepNavy,
