@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
 
@@ -10,6 +11,7 @@ export default function VerifyScreen() {
   const auth = useAuth();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [codeFocused, setCodeFocused] = useState(false);
 
   const handleVerify = async () => {
     if (!phone) {
@@ -39,42 +41,38 @@ export default function VerifyScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: colors.deepNavy, padding: 24 }}
+      style={styles.container}
     >
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text style={{ color: colors.gold, fontSize: 14, fontWeight: '700', marginBottom: 12 }}>
-          Verify phone number
-        </Text>
-        <Text style={{ color: colors.warmWhite, fontSize: 28, fontWeight: '800', marginBottom: 20 }}>
+      <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </Pressable>
+
+      <View style={styles.inner}>
+        <Text style={styles.label}>Verify phone number</Text>
+        <Text style={styles.heading}>
           Enter the code sent to {phone ?? 'your phone'}
         </Text>
+
         <TextInput
           value={code}
           onChangeText={setCode}
           keyboardType="number-pad"
           placeholder="123456"
-          placeholderTextColor={colors.electricBlue}
-          style={{
-            color: colors.warmWhite,
-            borderWidth: 1,
-            borderColor: colors.electricBlue,
-            borderRadius: 16,
-            padding: 16,
-            marginBottom: 18,
-          }}
+          placeholderTextColor="rgba(255,255,255,0.4)"
+          style={[styles.otpInput, codeFocused && styles.otpInputFocused]}
+          onFocus={() => setCodeFocused(true)}
+          onBlur={() => setCodeFocused(false)}
         />
+
         <Pressable
           onPress={handleVerify}
           disabled={loading}
-          style={({ pressed }) => ({
-            backgroundColor: pressed ? colors.vibrantGreen : colors.electricBlue,
-            borderRadius: 16,
-            paddingVertical: 16,
-            alignItems: 'center',
-            opacity: loading ? 0.6 : 1,
-          })}
+          style={({ pressed }) => [
+            styles.button,
+            { backgroundColor: pressed ? colors.vibrantGreen : colors.electricBlue, opacity: loading ? 0.6 : 1 },
+          ]}
         >
-          <Text style={{ color: colors.deepNavy, fontWeight: '700' }}>
+          <Text style={styles.buttonText}>
             {loading ? 'Verifying...' : 'Verify code'}
           </Text>
         </Pressable>
@@ -82,3 +80,58 @@ export default function VerifyScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.deepNavy,
+    padding: 24,
+  },
+  backButton: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  inner: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  label: {
+    color: colors.gold,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  heading: {
+    color: colors.warmWhite,
+    fontSize: 28,
+    fontWeight: '800',
+    marginBottom: 20,
+    lineHeight: 36,
+  },
+  otpInput: {
+    backgroundColor: '#1A2B3C',
+    borderRadius: 12,
+    height: 56,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    marginBottom: 16,
+    color: '#FFFFFF',
+    fontSize: 20,
+    letterSpacing: 8,
+    textAlign: 'center',
+  },
+  otpInputFocused: {
+    borderColor: '#1E90FF',
+  },
+  button: {
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: colors.deepNavy,
+    fontWeight: '700',
+    fontSize: 16,
+  },
+});

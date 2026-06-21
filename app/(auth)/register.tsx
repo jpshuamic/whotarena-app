@@ -22,6 +22,8 @@ export default function RegisterScreen() {
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [usernameFocused, setUsernameFocused] = useState(false);
+  const [phoneFocused, setPhoneFocused] = useState(false);
 
   const handleRegister = async () => {
     if (!username.trim()) {
@@ -56,27 +58,49 @@ export default function RegisterScreen() {
       <Pressable onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </Pressable>
+
       <View style={styles.inner}>
         <Text style={styles.label}>Create your account</Text>
         <Text style={styles.heading}>Sign Up</Text>
 
-        <TextInput
-          value={username}
-          onChangeText={setUsername}
-          placeholder="Choose a username"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          autoCapitalize="none"
-          style={styles.input}
-        />
+        <View style={[styles.inputContainer, usernameFocused && styles.inputContainerFocused]}>
+          <Ionicons
+            name="person-outline"
+            size={18}
+            color="rgba(255,255,255,0.4)"
+            style={styles.inputIcon}
+          />
+          <TextInput
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Choose a username"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            autoCapitalize="none"
+            style={styles.input}
+            onFocus={() => setUsernameFocused(true)}
+            onBlur={() => setUsernameFocused(false)}
+          />
+        </View>
 
-        <TextInput
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          placeholder="+2348012345678"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          style={styles.input}
-        />
+        <View style={[styles.inputContainer, phoneFocused && styles.inputContainerFocused]}>
+          <Ionicons
+            name="call-outline"
+            size={18}
+            color="rgba(255,255,255,0.4)"
+            style={styles.inputIcon}
+          />
+          <Text style={styles.flagText}>🇳🇬</Text>
+          <TextInput
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            placeholder="+2348012345678"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            style={styles.input}
+            onFocus={() => setPhoneFocused(true)}
+            onBlur={() => setPhoneFocused(false)}
+          />
+        </View>
 
         <Pressable
           onPress={handleRegister}
@@ -105,6 +129,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.deepNavy,
     padding: 24,
   },
+  backButton: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
   inner: {
     flex: 1,
     justifyContent: 'center',
@@ -121,15 +149,30 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginBottom: 20,
   },
-  input: {
-    color: colors.warmWhite,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1A2B3C',
     borderRadius: 12,
-    backgroundColor: colors.darkSurface,
     height: 56,
     paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
     marginBottom: 16,
+  },
+  inputContainerFocused: {
+    borderColor: '#1E90FF',
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  flagText: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  input: {
+    flex: 1,
+    color: '#FFFFFF',
     fontSize: 16,
   },
   button: {
@@ -142,10 +185,6 @@ const styles = StyleSheet.create({
     color: colors.deepNavy,
     fontWeight: '700',
     fontSize: 16,
-  },
-  backButton: {
-    marginTop: 16,
-    marginBottom: 8,
   },
   loginLink: {
     alignItems: 'center',
