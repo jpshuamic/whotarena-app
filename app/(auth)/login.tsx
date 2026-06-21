@@ -4,6 +4,17 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
 
+function formatPhoneNumber(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (digits.startsWith('234')) {
+    return '+' + digits;
+  }
+  if (digits.startsWith('0')) {
+    return '+234' + digits.slice(1);
+  }
+  return '+234' + digits;
+}
+
 export default function LoginScreen() {
   const router = useRouter();
   const auth = useAuth();
@@ -16,13 +27,14 @@ export default function LoginScreen() {
       return;
     }
 
+    const formatted = formatPhoneNumber(phone.trim());
     setLoading(true);
     try {
-      const response = await auth.signInWithPhone(phone.trim());
+      const response = await auth.signInWithPhone(formatted);
       if (response.error) {
         throw response.error;
       }
-      router.push({ pathname: '/(auth)/verify', params: { phone: phone.trim() } });
+      router.push({ pathname: '/(auth)/verify', params: { phone: formatted } });
     } catch (error) {
       Alert.alert('Unable to send code', String(error));
     } finally {
