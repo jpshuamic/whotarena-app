@@ -15,7 +15,7 @@ export function useAuth() {
     return supabase.auth.verifyOtp({ email, token, type: 'email' });
   };
 
-  const signInWithOAuthProvider = async (provider: 'google' | 'facebook') => {
+  const signInWithOAuthProvider = async (provider: 'google' | 'facebook'): Promise<void> => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo, skipBrowserRedirect: true },
@@ -23,10 +23,29 @@ export function useAuth() {
     if (error || !data.url) throw error ?? new Error('No OAuth URL returned');
 
     const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-    if (result.type !== 'success') return { data: null, error: null };
+    // User dismissed the browser — treat as silent cancel, not an error
+    if (result.type !== 'success') throw new Error('cancelled');
 
-    const { data: session, error: sessionError } = await supabase.auth.getSessionFromUrl(result.url);
-    return { data: session, error: sessionError };
+    // PKCE flow: extract authorization code and exchange for session
+    const codeMatch = result.url.match(/[?&]code=([^&]+)/);
+    if (codeMatch?.[1]) {
+      const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(
+        decodeURIComponent(codeMatch[1])
+      );
+      if (sessionErr) throw sessionErr;
+      return;
+    }
+
+    // Implicit flow fallback: tokens in URL fragment
+    const atMatch = result.url.match(/[#&]access_token=([^&]+)/);
+    const rtMatch = result.url.match(/[#&]refresh_token=([^&]+)/);
+    if (atMatch?.[1] && rtMatch?.[1]) {
+      const { error: sessionErr } = await supabase.auth.setSession({
+        access_token: decodeURIComponent(atMatch[1]),
+        refresh_token: decodeURIComponent(rtMatch[1]),
+      });
+      if (sessionErr) throw sessionErr;
+    }
   };
 
   const signOut = () => supabase.auth.signOut();
