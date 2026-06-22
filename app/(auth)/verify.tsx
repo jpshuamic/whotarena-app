@@ -3,11 +3,12 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, Tex
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 import { colors } from '../../constants/colors';
 
 export default function VerifyScreen() {
   const router = useRouter();
-  const { email, username } = useLocalSearchParams<{ email: string; username?: string }>();
+  const { email } = useLocalSearchParams<{ email: string }>();
   const auth = useAuth();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ export default function VerifyScreen() {
       return;
     }
     if (!code.trim()) {
-      Alert.alert('Enter verification code', 'Please enter the code you received via email.');
+      Alert.alert('Enter verification code', 'Please enter the 6-digit code from your email.');
       return;
     }
 
@@ -27,7 +28,31 @@ export default function VerifyScreen() {
     try {
       const response = await auth.verifyEmailOtp(email, code.trim());
       if (response.error) throw response.error;
-      router.replace('/(tabs)');
+
+      const user = response.data.user;
+      if (user) {
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .single();
+
+        if (!existingProfile) {
+          await supabase.from('profiles').insert({
+            id: user.id,
+            username: user.email?.split('@')[0] ?? 'Player',
+            real_balance: 0,
+            bonus_balance: 100000,
+            total_games: 0,
+            total_wins: 0,
+            win_rate: 0.0,
+            is_bot: false,
+            is_banned: false,
+          });
+        }
+      }
+
+      router.replace('/(tabs)/');
     } catch (error) {
       Alert.alert('Verification failed', String(error));
     } finally {
@@ -46,10 +71,9 @@ export default function VerifyScreen() {
 
       <View style={styles.inner}>
         <Text style={styles.label}>Verify your email</Text>
-        <Text style={styles.heading}>
-          Enter the code sent to {email ?? 'your email'}
-        </Text>
-        <Text style={styles.subtext}>Check your spam folder if you don't see it.</Text>
+        <Text style={styles.heading}>We sent a 6-digit code to</Text>
+        <Text style={styles.emailHighlight}>{email ?? 'your email'}</Text>
+        <Text style={styles.subtext}>Check your inbox and enter it below. Check spam if you don't see it.</Text>
 
         <TextInput
           value={code}
@@ -103,8 +127,14 @@ const styles = StyleSheet.create({
     color: colors.warmWhite,
     fontSize: 26,
     fontWeight: '800',
-    marginBottom: 8,
     lineHeight: 34,
+  },
+  emailHighlight: {
+    color: colors.electricBlue,
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 4,
+    marginBottom: 8,
   },
   subtext: {
     color: 'rgba(255,255,255,0.4)',

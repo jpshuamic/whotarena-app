@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const redirectTo = makeRedirectUri({ scheme: 'whotarena' });
+// In Expo Go this resolves to exp://host/--/auth/callback; in standalone to whotarena://auth/callback
+const REDIRECT_URI = makeRedirectUri({ scheme: 'whotarena', path: 'auth/callback' });
 
 export function useAuth() {
   const signInWithEmail = async (email: string) => {
@@ -18,15 +19,14 @@ export function useAuth() {
   const signInWithOAuthProvider = async (provider: 'google' | 'facebook'): Promise<void> => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo, skipBrowserRedirect: true },
+      options: { redirectTo: REDIRECT_URI, skipBrowserRedirect: true },
     });
     if (error || !data.url) throw error ?? new Error('No OAuth URL returned');
 
-    const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-    // User dismissed the browser — treat as silent cancel, not an error
+    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI);
     if (result.type !== 'success') throw new Error('cancelled');
 
-    // PKCE flow: extract authorization code and exchange for session
+    // PKCE flow — extract authorization code and exchange for session
     const codeMatch = result.url.match(/[?&]code=([^&]+)/);
     if (codeMatch?.[1]) {
       const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(
@@ -36,7 +36,7 @@ export function useAuth() {
       return;
     }
 
-    // Implicit flow fallback: tokens in URL fragment
+    // Implicit flow fallback — tokens in URL fragment
     const atMatch = result.url.match(/[#&]access_token=([^&]+)/);
     const rtMatch = result.url.match(/[#&]refresh_token=([^&]+)/);
     if (atMatch?.[1] && rtMatch?.[1]) {

@@ -1,7 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../constants/colors';
 import { brandImages } from '../../constants/images';
 import { useAuth } from '../../hooks/useAuth';
@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
       await auth.signInWithOAuthProvider(provider);
       router.replace('/(tabs)');
     } catch {
-      // If the browser was dismissed or provider not configured, do nothing
+      // Provider not configured or browser dismissed — stay on screen
     }
   };
 
@@ -47,14 +47,14 @@ export default function WelcomeScreen() {
       </View>
 
       <View style={styles.bottomSection}>
-        <Pressable style={styles.socialButton} onPress={() => handleOAuth('google')}>
-          <Ionicons name="logo-google" size={20} color="#EA4335" style={styles.socialIcon} />
-          <Text style={styles.socialButtonText}>Continue with Google</Text>
+        <Pressable style={styles.googleButton} onPress={() => handleOAuth('google')}>
+          <Ionicons name="logo-google" size={20} color="#EA4335" style={styles.btnIcon} />
+          <Text style={styles.googleButtonText}>Continue with Google</Text>
         </Pressable>
 
-        <Pressable style={styles.socialButton} onPress={() => handleOAuth('facebook')}>
-          <FontAwesome name="facebook" size={20} color="#1877F2" style={styles.socialIcon} />
-          <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+        <Pressable style={styles.facebookButton} onPress={() => handleOAuth('facebook')}>
+          <Ionicons name="logo-facebook" size={20} color="#FFFFFF" style={styles.btnIcon} />
+          <Text style={styles.facebookButtonText}>Continue with Facebook</Text>
         </Pressable>
 
         <View style={styles.dividerRow}>
@@ -63,16 +63,9 @@ export default function WelcomeScreen() {
           <View style={styles.dividerLine} />
         </View>
 
-        <Pressable style={styles.ctaButton} onPress={() => router.push('/(auth)/register')}>
-          <Text style={styles.ctaButtonText}>Create account →</Text>
+        <Pressable onPress={() => router.push('/(auth)/login')}>
+          <Text style={styles.emailLink}>Sign in with email</Text>
         </Pressable>
-
-        <View style={styles.signInRow}>
-          <Text style={styles.signInPrompt}>Already have an account? </Text>
-          <Pressable onPress={() => router.push('/(auth)/login')}>
-            <Text style={styles.signInLink}>Sign In</Text>
-          </Pressable>
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -149,20 +142,33 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     gap: 12,
   },
-  socialButton: {
+  googleButton: {
     backgroundColor: '#FFFFFF',
-    height: 54,
+    height: 56,
     borderRadius: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  socialIcon: {
+  facebookButton: {
+    backgroundColor: '#1877F2',
+    height: 56,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnIcon: {
     marginRight: 10,
   },
-  socialButtonText: {
-    color: '#0D1B2A',
-    fontSize: 15,
+  googleButtonText: {
+    color: '#1A1A1A',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  facebookButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '700',
   },
   dividerRow: {
@@ -181,37 +187,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
   },
-  ctaButton: {
-    backgroundColor: colors.electricBlue,
-    height: 56,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.electricBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  ctaButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '800',
-    letterSpacing: 0.3,
-  },
-  signInRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  signInPrompt: {
-    color: 'rgba(255,255,255,0.6)',
+  emailLink: {
+    color: 'rgba(255,255,255,0.5)',
     fontSize: 14,
-  },
-  signInLink: {
-    color: colors.gold,
-    fontWeight: '700',
-    fontSize: 14,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });

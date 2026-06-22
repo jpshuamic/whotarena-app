@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
 
@@ -35,7 +35,7 @@ export default function LoginScreen() {
       await auth.signInWithOAuthProvider(provider);
       router.replace('/(tabs)');
     } catch {
-      // dismissed
+      // Dismissed or provider not configured
     }
   };
 
@@ -60,6 +60,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
+            autoComplete="email"
             placeholder="your@email.com"
             placeholderTextColor="rgba(255,255,255,0.4)"
             style={styles.input}
@@ -71,27 +72,26 @@ export default function LoginScreen() {
         <Pressable
           onPress={handleSendOtp}
           disabled={loading}
-          style={[styles.button, { opacity: loading ? 0.6 : 1 }]}
+          style={[styles.sendButton, { opacity: loading ? 0.6 : 1 }]}
         >
-          <Text style={styles.buttonText}>{loading ? 'Sending code...' : 'Send verification code'}</Text>
+          <Text style={styles.sendButtonText}>{loading ? 'Sending...' : 'Send Code'}</Text>
         </Pressable>
 
         <View style={styles.dividerRow}>
           <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or sign in with</Text>
+          <Text style={styles.dividerText}>or</Text>
           <View style={styles.dividerLine} />
         </View>
 
-        <View style={styles.socialRow}>
-          <Pressable style={styles.socialButton} onPress={() => handleOAuth('google')}>
-            <Ionicons name="logo-google" size={20} color="#EA4335" />
-            <Text style={styles.socialButtonText}>Google</Text>
-          </Pressable>
-          <Pressable style={styles.socialButton} onPress={() => handleOAuth('facebook')}>
-            <FontAwesome name="facebook" size={20} color="#1877F2" />
-            <Text style={styles.socialButtonText}>Facebook</Text>
-          </Pressable>
-        </View>
+        <Pressable style={styles.googleButton} onPress={() => handleOAuth('google')}>
+          <Ionicons name="logo-google" size={20} color="#EA4335" style={styles.btnIcon} />
+          <Text style={styles.googleButtonText}>Continue with Google</Text>
+        </Pressable>
+
+        <Pressable style={styles.facebookButton} onPress={() => handleOAuth('facebook')}>
+          <Ionicons name="logo-facebook" size={20} color="#FFFFFF" style={styles.btnIcon} />
+          <Text style={styles.facebookButtonText}>Continue with Facebook</Text>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
@@ -114,14 +114,14 @@ const styles = StyleSheet.create({
   label: {
     color: colors.gold,
     fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 12,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   heading: {
     color: colors.warmWhite,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -145,14 +145,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
-  button: {
+  sendButton: {
     backgroundColor: colors.electricBlue,
     borderRadius: 16,
-    paddingVertical: 16,
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
   },
-  buttonText: {
+  sendButtonText: {
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
     marginBottom: 16,
   },
   dividerLine: {
@@ -170,26 +171,37 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     color: 'rgba(255,255,255,0.4)',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '500',
   },
-  socialRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  socialButton: {
-    flex: 1,
+  googleButton: {
     backgroundColor: '#FFFFFF',
-    height: 50,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    marginBottom: 12,
   },
-  socialButtonText: {
-    color: '#0D1B2A',
+  facebookButton: {
+    backgroundColor: '#1877F2',
+    height: 56,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnIcon: {
+    marginRight: 10,
+  },
+  googleButtonText: {
+    color: '#1A1A1A',
+    fontSize: 16,
     fontWeight: '700',
-    fontSize: 14,
+  },
+  facebookButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
