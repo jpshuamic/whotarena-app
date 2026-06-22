@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 
-/** Splash → routes to welcome (Screen 1→2) */
-export default function SplashScreen() {
-  return <Redirect href="/(auth)/welcome" />;
+// DEV BYPASS: skip auth, go straight to lobby. Restore href="/(auth)/welcome" when auth is ready.
+export default function Index() {
+  return <Redirect href="/(tabs)/" />;
 }
