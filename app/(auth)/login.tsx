@@ -1,46 +1,41 @@
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/useAuth';
 import { colors } from '../../constants/colors';
-
-function formatPhoneNumber(raw: string): string {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.startsWith('234')) {
-    return '+' + digits;
-  }
-  if (digits.startsWith('0')) {
-    return '+234' + digits.slice(1);
-  }
-  return '+234' + digits;
-}
 
 export default function LoginScreen() {
   const router = useRouter();
   const auth = useAuth();
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [phoneFocused, setPhoneFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
 
   const handleSendOtp = async () => {
-    if (!phone.trim()) {
-      Alert.alert('Enter phone number', 'Please enter your phone number to continue.');
+    if (!email.trim()) {
+      Alert.alert('Enter email', 'Please enter your email address to continue.');
       return;
     }
 
-    const formatted = formatPhoneNumber(phone.trim());
     setLoading(true);
     try {
-      const response = await auth.signInWithPhone(formatted);
-      if (response.error) {
-        throw response.error;
-      }
-      router.push({ pathname: '/(auth)/verify', params: { phone: formatted } });
+      const response = await auth.signInWithEmail(email.trim().toLowerCase());
+      if (response.error) throw response.error;
+      router.push({ pathname: '/(auth)/verify', params: { email: email.trim().toLowerCase() } });
     } catch (error) {
       Alert.alert('Unable to send code', String(error));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOAuth = async (provider: 'google' | 'facebook') => {
+    try {
+      await auth.signInWithOAuthProvider(provider);
+      router.replace('/(tabs)');
+    } catch {
+      // dismissed
     }
   };
 
@@ -54,26 +49,22 @@ export default function LoginScreen() {
       </Pressable>
 
       <View style={styles.inner}>
-        <Text style={styles.label}>Sign in with phone</Text>
-        <Text style={styles.heading}>Enter your phone number</Text>
+        <Text style={styles.label}>Sign in with email</Text>
+        <Text style={styles.heading}>Enter your email</Text>
 
-        <View style={[styles.inputContainer, phoneFocused && styles.inputContainerFocused]}>
-          <Ionicons
-            name="call-outline"
-            size={18}
-            color="rgba(255,255,255,0.4)"
-            style={styles.inputIcon}
-          />
-          <Text style={styles.flagText}>🇳🇬</Text>
+        <View style={[styles.inputContainer, emailFocused && styles.inputContainerFocused]}>
+          <Ionicons name="mail-outline" size={18} color="rgba(255,255,255,0.4)" style={styles.inputIcon} />
           <TextInput
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-            placeholder="+2348012345678"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="your@email.com"
             placeholderTextColor="rgba(255,255,255,0.4)"
             style={styles.input}
-            onFocus={() => setPhoneFocused(true)}
-            onBlur={() => setPhoneFocused(false)}
+            onFocus={() => setEmailFocused(true)}
+            onBlur={() => setEmailFocused(false)}
           />
         </View>
 
@@ -82,10 +73,25 @@ export default function LoginScreen() {
           disabled={loading}
           style={[styles.button, { opacity: loading ? 0.6 : 1 }]}
         >
-          <Text style={styles.buttonText}>
-            {loading ? 'Sending code...' : 'Send verification code'}
-          </Text>
+          <Text style={styles.buttonText}>{loading ? 'Sending code...' : 'Send verification code'}</Text>
         </Pressable>
+
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or sign in with</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <View style={styles.socialRow}>
+          <Pressable style={styles.socialButton} onPress={() => handleOAuth('google')}>
+            <Ionicons name="logo-google" size={20} color="#EA4335" />
+            <Text style={styles.socialButtonText}>Google</Text>
+          </Pressable>
+          <Pressable style={styles.socialButton} onPress={() => handleOAuth('facebook')}>
+            <FontAwesome name="facebook" size={20} color="#1877F2" />
+            <Text style={styles.socialButtonText}>Facebook</Text>
+          </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -134,10 +140,6 @@ const styles = StyleSheet.create({
   inputIcon: {
     marginRight: 10,
   },
-  flagText: {
-    fontSize: 16,
-    marginRight: 6,
-  },
   input: {
     flex: 1,
     color: '#FFFFFF',
@@ -148,10 +150,46 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
+    marginBottom: 20,
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  dividerText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  socialRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  socialButton: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  socialButtonText: {
+    color: '#0D1B2A',
+    fontWeight: '700',
+    fontSize: 14,
   },
 });

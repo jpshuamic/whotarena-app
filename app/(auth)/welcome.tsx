@@ -1,13 +1,25 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { colors } from '../../constants/colors';
 import { brandImages } from '../../constants/images';
+import { useAuth } from '../../hooks/useAuth';
 
 const FEATURE_PILLS = ['Skill Game', 'Real Money', 'Instant Pay'];
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const auth = useAuth();
+
+  const handleOAuth = async (provider: 'google' | 'facebook') => {
+    try {
+      await auth.signInWithOAuthProvider(provider);
+      router.replace('/(tabs)');
+    } catch {
+      // If the browser was dismissed or provider not configured, do nothing
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -24,9 +36,6 @@ export default function WelcomeScreen() {
         />
         <Text style={styles.headline}>Play Whot. Win Real Money.</Text>
         <Text style={styles.subtext}>Nigeria's #1 skill card game.</Text>
-        <Text style={[styles.subtext, styles.subtextSpacing]}>
-          Deposit. Play. Withdraw instantly.
-        </Text>
 
         <View style={styles.pillsRow}>
           {FEATURE_PILLS.map((pill) => (
@@ -38,11 +47,24 @@ export default function WelcomeScreen() {
       </View>
 
       <View style={styles.bottomSection}>
-        <Pressable
-          style={styles.ctaButton}
-          onPress={() => router.push('/(auth)/register')}
-        >
-          <Text style={styles.ctaButtonText}>Let's Play →</Text>
+        <Pressable style={styles.socialButton} onPress={() => handleOAuth('google')}>
+          <Ionicons name="logo-google" size={20} color="#EA4335" style={styles.socialIcon} />
+          <Text style={styles.socialButtonText}>Continue with Google</Text>
+        </Pressable>
+
+        <Pressable style={styles.socialButton} onPress={() => handleOAuth('facebook')}>
+          <FontAwesome name="facebook" size={20} color="#1877F2" style={styles.socialIcon} />
+          <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+        </Pressable>
+
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <Pressable style={styles.ctaButton} onPress={() => router.push('/(auth)/register')}>
+          <Text style={styles.ctaButtonText}>Create account →</Text>
         </Pressable>
 
         <View style={styles.signInRow}>
@@ -85,31 +107,28 @@ const styles = StyleSheet.create({
   },
   mascot: {
     width: '90%',
-    height: 300,
+    height: 260,
     alignSelf: 'center',
   },
   headline: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '800',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginTop: 28,
-    lineHeight: 34,
+    marginTop: 20,
+    lineHeight: 32,
   },
   subtext: {
     fontSize: 15,
     color: colors.electricBlue,
     textAlign: 'center',
-    marginTop: 8,
-  },
-  subtextSpacing: {
-    marginTop: 4,
+    marginTop: 6,
   },
   pillsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 10,
-    marginTop: 24,
+    marginTop: 20,
   },
   pill: {
     backgroundColor: colors.darkSurface,
@@ -126,13 +145,45 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: 24,
-    paddingBottom: 48,
-    paddingTop: 24,
+    paddingBottom: 36,
+    paddingTop: 16,
+    gap: 12,
+  },
+  socialButton: {
+    backgroundColor: '#FFFFFF',
+    height: 54,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  socialIcon: {
+    marginRight: 10,
+  },
+  socialButtonText: {
+    color: '#0D1B2A',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginVertical: 4,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  dividerText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 13,
+    fontWeight: '500',
   },
   ctaButton: {
     backgroundColor: colors.electricBlue,
-    width: '100%',
-    height: 58,
+    height: 56,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
@@ -144,7 +195,7 @@ const styles = StyleSheet.create({
   },
   ctaButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
@@ -152,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 4,
   },
   signInPrompt: {
     color: 'rgba(255,255,255,0.6)',

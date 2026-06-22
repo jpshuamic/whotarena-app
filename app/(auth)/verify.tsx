@@ -7,29 +7,26 @@ import { colors } from '../../constants/colors';
 
 export default function VerifyScreen() {
   const router = useRouter();
-  const { phone } = useLocalSearchParams<{ phone: string }>();
+  const { email, username } = useLocalSearchParams<{ email: string; username?: string }>();
   const auth = useAuth();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [codeFocused, setCodeFocused] = useState(false);
 
   const handleVerify = async () => {
-    if (!phone) {
-      Alert.alert('Missing phone number', 'Please return to the login screen and enter your phone number.');
+    if (!email) {
+      Alert.alert('Missing email', 'Please return to the login screen and enter your email.');
       return;
     }
-
     if (!code.trim()) {
-      Alert.alert('Enter verification code', 'Please enter the code you received via SMS.');
+      Alert.alert('Enter verification code', 'Please enter the code you received via email.');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await auth.verifyOtp(phone, code.trim());
-      if (response.error) {
-        throw response.error;
-      }
+      const response = await auth.verifyEmailOtp(email, code.trim());
+      if (response.error) throw response.error;
       router.replace('/(tabs)');
     } catch (error) {
       Alert.alert('Verification failed', String(error));
@@ -48,10 +45,11 @@ export default function VerifyScreen() {
       </Pressable>
 
       <View style={styles.inner}>
-        <Text style={styles.label}>Verify phone number</Text>
+        <Text style={styles.label}>Verify your email</Text>
         <Text style={styles.heading}>
-          Enter the code sent to {phone ?? 'your phone'}
+          Enter the code sent to {email ?? 'your email'}
         </Text>
+        <Text style={styles.subtext}>Check your spam folder if you don't see it.</Text>
 
         <TextInput
           value={code}
@@ -62,6 +60,7 @@ export default function VerifyScreen() {
           style={[styles.otpInput, codeFocused && styles.otpInputFocused]}
           onFocus={() => setCodeFocused(true)}
           onBlur={() => setCodeFocused(false)}
+          maxLength={6}
         />
 
         <Pressable
@@ -69,9 +68,11 @@ export default function VerifyScreen() {
           disabled={loading}
           style={[styles.button, { opacity: loading ? 0.6 : 1 }]}
         >
-          <Text style={styles.buttonText}>
-            {loading ? 'Verifying...' : 'Verify code'}
-          </Text>
+          <Text style={styles.buttonText}>{loading ? 'Verifying...' : 'Verify code'}</Text>
+        </Pressable>
+
+        <Pressable onPress={() => router.back()} style={styles.resendLink}>
+          <Text style={styles.resendText}>Didn't get the code? Go back and resend</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -100,23 +101,29 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: colors.warmWhite,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
-    marginBottom: 20,
-    lineHeight: 36,
+    marginBottom: 8,
+    lineHeight: 34,
+  },
+  subtext: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 13,
+    marginBottom: 24,
   },
   otpInput: {
     backgroundColor: '#1A2B3C',
     borderRadius: 12,
-    height: 56,
+    height: 64,
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
     marginBottom: 16,
     color: '#FFFFFF',
-    fontSize: 20,
-    letterSpacing: 8,
+    fontSize: 28,
+    letterSpacing: 12,
     textAlign: 'center',
+    fontWeight: '700',
   },
   otpInputFocused: {
     borderColor: '#1E90FF',
@@ -126,10 +133,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
+    marginBottom: 16,
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+  },
+  resendLink: {
+    alignItems: 'center',
+  },
+  resendText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 13,
   },
 });
