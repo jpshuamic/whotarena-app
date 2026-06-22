@@ -11,11 +11,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: false,
   },
-  global: {
-    // Force React Native's native fetch; prevents cross-fetch/whatwg-fetch
-    // from being used, which fails in the native environment.
-    fetch: globalThis.fetch.bind(globalThis),
-  },
 });
 
 /** Realtime tables (Section 13) */
