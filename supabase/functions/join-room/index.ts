@@ -3,7 +3,7 @@ import { createInitialGameState } from '../_shared/state.ts';
 import type { GameVariant, PlayerSlot, StakeLevel } from '../_shared/types.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const SUPABASE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const SUPABASE_KEY = Deno.env.get('SERVICE_ROLE_KEY') ?? '';
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
   Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -70,6 +70,17 @@ function getBotCount(variant: GameVariant): number {
 }
 
 serve(async (req) => {
+  console.log('join-room called');
+  console.log('Method:', req.method);
+
+  const authHeader = req.headers.get('Authorization');
+  console.log('Auth header:', authHeader ? 'present' : 'MISSING');
+
+  if (!authHeader) {
+    console.error('No auth header - user not logged in');
+    return createJsonResponse({ error: 'Unauthorized - no auth header' }, 401);
+  }
+
   if (req.method !== 'POST') {
     return createJsonResponse({ error: 'Method not allowed' }, 405);
   }
@@ -78,7 +89,7 @@ serve(async (req) => {
     return createJsonResponse({ error: 'Supabase environment not configured' }, 500);
   }
 
-  const authUser = await getUserFromAuth(req.headers.get('authorization'));
+  const authUser = await getUserFromAuth(authHeader);
   if (!authUser?.id) {
     return createJsonResponse({ error: 'Unauthorized' }, 401);
   }

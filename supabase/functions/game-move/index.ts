@@ -9,7 +9,7 @@ import { applyMove, calculatePotKobo } from '../_shared/state.ts';
 import type { GameState, MoveInput, PlayerSlot } from '../_shared/types.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const SUPABASE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const SUPABASE_KEY = Deno.env.get('SERVICE_ROLE_KEY') ?? '';
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
   Authorization: `Bearer ${SUPABASE_KEY}`,

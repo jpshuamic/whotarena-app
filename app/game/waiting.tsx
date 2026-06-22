@@ -123,6 +123,12 @@ export default function WaitingRoomScreen() {
     setErrorMessage(null);
 
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log('Auth session:', session?.user?.id);
+      console.log('Auth token:', session?.access_token ? 'EXISTS' : 'MISSING');
+
       const { data, error } = await supabase.functions.invoke('join-room', {
         method: 'POST',
         body: { roomLevel },
